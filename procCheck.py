@@ -17,8 +17,8 @@ with open(procsListFile, 'r') as allProcsList:
     print(yamlError)
 
 #
-byName = procsList["procs"]["byName"]
-byPattern = procsList["procs"]["byPattern"]
+byName = procsList["byName"]
+byPattern = procsList["byPattern"]
 
 # Convert list procs to dict with empty pattern.
 for proc in byName:
