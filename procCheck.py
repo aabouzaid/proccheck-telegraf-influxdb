@@ -1,18 +1,38 @@
 #!/usr/bin/env python
 
 import os
-import socket
+import sys
 import yaml
+import socket
+import argparse
 
-#
+
+# Script options.
+parser = argparse.ArgumentParser()
+parser.add_argument("-f","--yml-file", help="Path for processes list in YAML file.")
+args = parser.parse_args()
+
+# Plugin name will be used as measurement name in Telegraf.
 pluginName = "procCheck"
 hostName = socket.gethostname()
 
-#
-procsListFile = "./procList.yml"
-with open(procsListFile, 'r') as allProcsList:
+# Set path of Yaml file with procs list.
+if args.yml_file:
+  procsYamlFile = args.yml_file
+else:
+  procsYamlFile = "./procList.yml"
+
+# Check if procs list file exists.
+try:
+    os.path.isfile(procsYamlFile)
+except TypeError:
+    print "Cannot open YAML file: %s." % (procsYamlFile)
+    sys.exit(1)
+
+# Laod content of Yaml file.
+with open(procsYamlFile, 'r') as procsListFile:
   try:
-    procsList = yaml.load(allProcsList)
+    procsList = yaml.load(procsListFile)
   except yaml.YAMLError as yamlError:
     print(yamlError)
 
