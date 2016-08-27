@@ -1,0 +1,6 @@
+procs:
+  byName:
+    - sshd
+    - firefox
+  byPattern:
+    nm: "NetworkManager"
