@@ -29,10 +29,10 @@ else:
 
 # Check if procs list file exists.
 try:
-    os.path.isfile(procsListFile)
+  os.path.isfile(procsListFile)
 except TypeError:
-    print "Cannot open YAML file: %s." % (procsListFile)
-    sys.exit(1)
+  print "Cannot open YAML file: %s." % (procsListFile)
+  sys.exit(1)
 
 # Load content of Yaml file.
 with open(procsListFile, 'r') as procsYamlFile:
@@ -42,8 +42,12 @@ with open(procsListFile, 'r') as procsYamlFile:
     print(yamlError)
 
 # Load procs list by category.
-byName = procsList["byName"]
-byPattern = procsList["byPattern"]
+try:
+  byName = procsList["byName"]
+  byPattern = procsList["byPattern"]
+except KeyError:
+  print 'Cannot find "byName" or "byPattern" in %s.' % (procsListFile)
+  sys.exit(1)
 
 # Add list procs with empty pattern list of procs with pattern.
 for proc in byName:
