@@ -109,6 +109,6 @@ for pid, procInfo in procsFound.iteritems():
     'pattern': procInfo["pattern"]
   }
 
-  # In InfluxDB format, first group is tag names, and second group is values.
+  # In InfluxDB format, first group is tags names, and second group is values.
   print ('%(pluginName)s,host=%(host)s,process_name=%(processName)s,exe=%(exe)s,pid=%(pid)s'
          ' host=%(host)s,process_name="%(processName)s",exe="%(exe)s",pid=%(pid)s,pattern="%(pattern)s"' % outputValues)
