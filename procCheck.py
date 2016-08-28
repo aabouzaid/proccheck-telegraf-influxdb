@@ -98,7 +98,7 @@ for procName, procPattern in procsList.iteritems():
     elif procName == systemProcInfo["name"]:
       procsFound.update({pid: {"name": procName, "exe": systemProcInfo["name"], "pattern": ""}})
 
-# Loop over procs that are found, and print them in Telegraf/InfluxDB format.
+# Loop over procs that are found, and print them in InfluxDB format.
 for pid, procInfo in procsFound.iteritems():
   outputValues = {
     'host': hostName,
@@ -109,6 +109,6 @@ for pid, procInfo in procsFound.iteritems():
     'pattern': procInfo["pattern"]
   }
 
-  # In InfluxDB, first group has tag names, and second group has values.
+  # In InfluxDB format, first group is tag names, and second group is values.
   print ('%(pluginName)s,host=%(host)s,process_name=%(processName)s,exe=%(exe)s,pid=%(pid)s'
          ' host=%(host)s,process_name="%(processName)s",exe="%(exe)s",pid=%(pid)s,pattern="%(pattern)s"' % outputValues)
