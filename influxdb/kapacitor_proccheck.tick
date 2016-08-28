@@ -1,0 +1,28 @@
+batch
+    // Counting will work fine for any column, since "count" just counts number of rows.
+    // So the column "process_name" itself is not important here.
+    |query('''
+        SELECT count("process_name") as query_value
+        FROM "processes_status"."30D"."procCheck"
+    ''')
+        .period(2m)
+        .every(1m)
+        .fill('null')
+        .groupBy(time(1m), 'process_name', 'host')
+
+    |deadman(0.0, 1m)
+        // Alert title.
+        .id('Monitored processes - {{ index .Tags "process_name" }}')
+
+        // Alert body.
+        .message('Server:{{ index .Tags "host" }}|Process {{ index .Tags "process_name" }} STOPPED!')
+
+        // Send notification when state changes only.
+        .stateChangesOnly()
+
+        // Send alerts to VictorOps.
+        .victorOps()
+        .routingKey('everyone')
+
+        // For Debugging purposes.
+        //.log('/tmp/kapacitor_procscheck.log')
