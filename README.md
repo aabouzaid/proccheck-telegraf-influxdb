@@ -7,9 +7,9 @@ Intro.
 ------
 Python script checks list of processes based on process name or pattern and print status in InfluxDB format.
 
-This script provides "blackbox" monitoring for processes, and with Telegraf (exec plugin) you can store processes' status in InfluxDB then process that data and get alerts via Kapacitor using dead man's switch (alerts will be sent if no data for any of processes).
+This script provides "blackbox" monitoring for processes, and with [Telegraf](https://github.com/influxdata/telegraf) ([exec](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/exec) plugin) you can store processes' status in InfluxDB then process that data and get alerts via [Kapacitor](https://github.com/influxdata/kapacitor) using dead man's switch (alerts will be sent if no data for any of processes).
 
-I created this script quickly till procstat bug is fixed! It reports wrong PIDs, because it caches the PIDs. (I'd like to fix it but since I don't really "Go" language, I cannot really help).
+I created this script quickly till [procstat](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/procstat) bug is fixed! It reports wrong PIDs, because [it caches the PIDs](https://github.com/influxdata/telegraf/issues/1636). (I'd like to fix it but since I don't really "Go" language, I cannot really help).
 
 
 How doest it work?
@@ -43,14 +43,12 @@ procCheck,host=LinuxRocks,process_name=firefox,exe=firefox,pid=4014 host=LinuxRo
 
 Telegraf config.
 ----------------
-Here is a config file to make it works with Telegraf via "exec" plugin.
+Here is a [Telegraf config](influxdb/telegraf_proccheck.conf) file to make this script works with via "exec" plugin.
 
 
 Kapacitor script.
 -----------------
-With Kapacitor (which is for time-series data processing, alerting, and anomaly detection) you can get alerts when any process is stopped.
-
-This TICK script uses dead man's switch, so you will get an alert when the monitored process is not there anymore.
+With Kapacitor you can get alerts when any process is stopped. I wrote [TICK script](influxdb/kapacitor_proccheck.tick) uses dead man's switch, so you will get an alert when the monitored process is not there anymore.
 
 It makes a batch queries (I think we don't need "stream" here), and if there is no data for any of monitored processes it will send and alert via "VictorOps".
 
