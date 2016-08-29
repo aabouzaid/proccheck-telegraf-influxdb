@@ -41,6 +41,17 @@ procCheck,host=LinuxRocks,process_name=nm,exe=dhclient,pid=11079 host=LinuxRocks
 procCheck,host=LinuxRocks,process_name=firefox,exe=firefox,pid=4014 host=LinuxRocks,process_name="firefox",exe="firefox",pid=4014,pattern=""
 ```
 
+
+Options
+-------
+There is only one option for this script right now. By default it will use `procList.yml` in the same directory as a source of process list.
+But you can also use `-f` to set the path for any yaml file. e.g.
+
+```
+procCheck.py -f ~/scripts/monitored_processes.yml
+```
+
+
 Telegraf config.
 ----------------
 Here is a [Telegraf config](influxdb/telegraf_proccheck.conf) file to make this script works with via "exec" plugin.
