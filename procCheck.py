@@ -69,20 +69,19 @@ pidsList = [pid for pid in os.listdir('/proc') if pid.isdigit()]
 
 # Function to get info from any file inside "/proc/PID" path.
 def getProcInfo(pid, pathName):
-  procInfo = open(os.path.join('/proc', pid, pathName), 'rb').read().rstrip('\n').replace('\x00',' ')
+  try:
+    procInfo = open(os.path.join('/proc', pid, pathName), 'rb').read().rstrip('\n').replace('\x00',' ')
+  # Handle the error in case any proc did exit while script is still working.
+  except IOError:
+    pass
   return procInfo
 
 # Add proc PID, command arguments, and bin/exe name.
 for pid in pidsList:
-  try:
-    procArgs = getProcInfo(pid, 'cmdline')
-    procBin = getProcInfo(pid, 'comm')
-    if procArgs:
-      systemProcs.update({pid: {"name": procBin, "args": procArgs}})
-
-  # Handle the error in case any proc did exit while script is still working.
-  except IOError:
-    continue
+  procArgs = getProcInfo(pid, 'cmdline')
+  procBin = getProcInfo(pid, 'comm')
+  if procArgs:
+    systemProcs.update({pid: {"name": procBin, "args": procArgs}})
 
 
 # ------------------------------------------------------------------ #
