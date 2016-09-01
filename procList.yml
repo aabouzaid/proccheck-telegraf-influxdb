@@ -4,3 +4,6 @@ byName:
 
 byString:
   nm: "NetworkManager"
+
+byRegex:
+  unity: "unity.+"
