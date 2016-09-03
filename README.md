@@ -52,7 +52,6 @@ Options
 You can set path of Yaml file that has processes list. Or set measurement name which will be used in Telegraf.
 
 ```
-python procCheck.py -h
 usage: procCheck.py [-h] [-f YML_FILE] [-n MEASUREMENT_NAME]
 
 optional arguments:
