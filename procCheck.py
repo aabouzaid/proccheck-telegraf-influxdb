@@ -94,7 +94,7 @@ def getSystemProcs():
 
 #
 # Find procs in system procs, and print them.
-def printProcsInSystem(procsList, commonOptions):
+def printProcsInSystem(procsList, measurementName):
 
   def updateProcsFound(procsDict, pid, name, exe, pattern="", matchedRegex=""):
     procData = {pid: {"name": procName, "exe": sysProcName, "pattern": procPattern, "matched_regex": matchedRegex}}
@@ -102,7 +102,8 @@ def printProcsInSystem(procsList, commonOptions):
 
   # Empty dict for all procs are found in the system.
   procsFound = dict()
-  
+  hostname = socket.gethostname()
+
   # Find if processes are found in the system and add them to dict.
   for proc in procsList:
     procName = proc['name']
@@ -130,33 +131,32 @@ def printProcsInSystem(procsList, commonOptions):
   # Loop over procs that are found, and print them in InfluxDB format.
   for pid, procInfo in procsFound.iteritems():
     outputValues = {
+      'pluginName': measurementName,
+      'hostname': hostname,
       'pid': pid,
       'exe': procInfo["exe"],
       'pattern': procInfo["pattern"],
       'processName': procInfo["name"],
       'matchedRegex': procInfo['matched_regex']
     }
-    outputValues.update(commonOptions)
-  
+
+    procOutputKeys = ('%(pluginName)s,host=%(hostname)s,process_name=%(processName)s,exe=%(exe)s,pid=%(pid)s' % outputValues)
+    procOutputData = ('host=%(hostname)s,process_name="%(processName)s",exe="%(exe)s",pid=%(pid)s,pattern="%(pattern)s",matched_regex"%(matchedRegex)s"' % outputValues)
+
     # In InfluxDB format, first group is tags names, and second group is values.
-    print ('%(pluginName)s,host=%(hostname)s,process_name=%(processName)s,exe=%(exe)s,pid=%(pid)s'
-           ' host=%(hostname)s,process_name="%(processName)s",exe="%(exe)s",pid=%(pid)s,pattern="%(pattern)s",matched_regex"%(matchedRegex)s"' % outputValues)
+    print procOutputKeys, procOutputData
 
 # ------------------------------------------------------------------ #
 # Main.
 # ------------------------------------------------------------------ #
 
 if __name__ == "__main__":
+
   # Script options.
   parser = argparse.ArgumentParser()
   parser.add_argument("-f","--yml-file", default="./procList.yml", help="Path for processes list in YAML file.")
+  parser.add_argument("-n","--measurement-name", default="procCheck", help="It will be used as measurement name in Telegraf")
   args = parser.parse_args()
-  
-  # Plugin name will be used as measurement name in Telegraf.
-  mainOptions = {
-    "pluginName": "procCheck",
-    "hostname": socket.gethostname()
-  }
   
   # Check if any group is missing.
   procsListGroups = [
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     'byRegex'
   ]
   
-  # Yaml file path.
+  # Set Yaml file path.
   procsListFile = args.yml_file
   
   # Get content of Yaml file.
@@ -178,4 +178,4 @@ if __name__ == "__main__":
   systemProcs = getSystemProcs()
 
   # Print processes that founded.
-  printProcsInSystem(procsList, mainOptions)
+  printProcsInSystem(procsList, args.measurement_name)
