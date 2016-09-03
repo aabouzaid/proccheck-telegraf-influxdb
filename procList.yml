@@ -1,9 +1,12 @@
+# Process name.
 byName:
   - sshd
-  - firefox
+  - vnc
 
+# Fixed string.
 byString:
-  nm: "NetworkManager"
+  zookeeper: "org.apache.zookeeper.server.quorum.QuorumPeerMain"
 
+# Regular expression.
 byRegex:
-  unity: "unity.+"
+  nginx_master: "nginx: master process .+nginx.+"

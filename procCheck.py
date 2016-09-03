@@ -153,9 +153,9 @@ def printProcsInSystem(procsList, measurementName):
 if __name__ == "__main__":
 
   # Script options.
-  parser = argparse.ArgumentParser()
-  parser.add_argument("-f","--yml-file", default="./procList.yml", help="Path for processes list in YAML file.")
-  parser.add_argument("-n","--measurement-name", default="procCheck", help="It will be used as measurement name in Telegraf")
+  parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+  parser.add_argument("-f","--yml-file", default="procList.yml", help="Path for processes list in YAML file.")
+  parser.add_argument("-n","--measurement-name", default="procCheck", help="It will be used as measurement name in Telegraf.")
   args = parser.parse_args()
   
   # Check if any group is missing.
