@@ -27,17 +27,17 @@ class script(object):
     def openYamlFile(self, yamlFile):
         # Check if procs list file exists.
         try:
-          os.path.isfile(yamlFile)
+            os.path.isfile(yamlFile)
         except TypeError:
-          print "Cannot open YAML file: %s." % (yamlFile)
-          sys.exit(1)
+            print "Cannot open YAML file: %s." % (yamlFile)
+            sys.exit(1)
 
         # Load content of Yaml file.
         with open(yamlFile, 'r') as procsYamlFile:
-          try:
-            yamlFileContent = yaml.load(procsYamlFile)
-          except yaml.YAMLError as yamlError:
-            print(yamlError)
+            try:
+                yamlFileContent = yaml.load(procsYamlFile)
+            except yaml.YAMLError as yamlError:
+                print(yamlError)
         #
         return yamlFileContent
 
@@ -53,9 +53,9 @@ class procCheck(object):
 
         # Validate names of main groups in procs list file.
         if set(yamlMonitoredProcs.keys()) - set(self.monitoredProcsGroups):
-          groupsListFormated = '", "'.join(self.monitoredProcsGroups)
-          print 'One of following groups "%s" is not found in %s' % (groupsListFormated, monitoredProcsFile)
-          sys.exit(1)
+            groupsListFormated = '", "'.join(self.monitoredProcsGroups)
+            print 'One of following groups "%s" is not found in %s' % (groupsListFormated, monitoredProcsFile)
+            sys.exit(1)
 
         # Init a list of dicts, where each dict reprecents a proc.
         formatedProcList = list()
@@ -68,13 +68,13 @@ class procCheck(object):
 
         # Append content of groups to the list.
         for group in yamlMonitoredProcs:
-          if group == 'byRegex':
-            regex = True
-          else:
-            regex = False
+            if group == 'byRegex':
+               regex = True
+            else:
+               regex = False
 
-          for proc, pattern in yamlMonitoredProcs[group].iteritems():
-            formatedProcList.append({"name": proc, "pattern": pattern, "regex": regex})
+            for proc, pattern in yamlMonitoredProcs[group].iteritems():
+                formatedProcList.append({"name": proc, "pattern": pattern, "regex": regex})
         #
         return formatedProcList
 
@@ -89,19 +89,19 @@ class procCheck(object):
 
         # Function to get info from any file inside "/proc/PID" path.
         def getProcInfo(pid, pathName):
-          try:
-            procInfo = open(os.path.join('/proc', pid, pathName), 'rb').read().rstrip('\n').replace('\x00',' ')
-          # Handle the error in case any proc did exit while script is still working.
-          except IOError:
-            pass
-          return procInfo
+            try:
+                procInfo = open(os.path.join('/proc', pid, pathName), 'rb').read().rstrip('\n').replace('\x00',' ')
+            # Handle the error in case any proc did exit while script is still working.
+            except IOError:
+                pass
+            return procInfo
 
         # Add proc PID, command arguments, and bin/exe name.
         for pid in pidsList:
-          procArgs = getProcInfo(pid, 'cmdline')
-          procBin = getProcInfo(pid, 'comm')
-          if procArgs:
-            systemProcs.update({pid: {"name": procBin, "args": procArgs}})
+            procArgs = getProcInfo(pid, 'cmdline')
+            procBin = getProcInfo(pid, 'comm')
+            if procArgs:
+                systemProcs.update({pid: {"name": procBin, "args": procArgs}})
         #
         return systemProcs
 
@@ -130,18 +130,18 @@ class procCheck(object):
                 sysProcArgs = systemProcInfo["args"]
 
                 if byRegex:
-                  regexPattern = re.compile(procPattern)
-                  matchedRegex = regexPattern.findall(sysProcArgs)
+                    regexPattern = re.compile(procPattern)
+                    matchedRegex = regexPattern.findall(sysProcArgs)
 
                 # Find procs by Regex
                 if byRegex and regexPattern.search(sysProcArgs):
-                  self.updateProcsDict(foundProcs, pid, procName, sysProcName, procPattern, matchedRegex[0])
+                   self.updateProcsDict(foundProcs, pid, procName, sysProcName, procPattern, matchedRegex[0])
                 # Find procs by pattern (fixed string).
                 elif procPattern and procPattern in sysProcArgs:
-                  self.updateProcsDict(foundProcs, pid, procName, sysProcName, procPattern)
+                   self.updateProcsDict(foundProcs, pid, procName, sysProcName, procPattern)
                 # Find procs by name.
                 elif procName == sysProcName:
-                  self.updateProcsDict(foundProcs, pid, procName, sysProcName)
+                   self.updateProcsDict(foundProcs, pid, procName, sysProcName)
         #
         return foundProcs
 
@@ -152,13 +152,13 @@ class procCheck(object):
         # Loop over procs that are found, and print them in InfluxDB format.
         for pid, procInfo in foundProcs.iteritems():
             outputValues = {
-              'pluginName': measurementName,
-              'hostname': hostname,
-              'pid': pid,
-              'exe': procInfo["exe"],
-              'pattern': procInfo["pattern"],
-              'processName': procInfo["name"],
-              'matchedRegex': procInfo['matched_regex']
+                'pluginName': measurementName,
+                'hostname': hostname,
+                'pid': pid,
+                'exe': procInfo["exe"],
+                'pattern': procInfo["pattern"],
+                'processName': procInfo["name"],
+                'matchedRegex': procInfo['matched_regex']
             }
 
             procOutputKeys = ('%(pluginName)s,host=%(hostname)s,process_name=%(processName)s,exe=%(exe)s,pid=%(pid)s' % outputValues)
@@ -174,9 +174,9 @@ class procCheck(object):
 if __name__ == "__main__":
     # Check if any group is missing.
     monitoredProcsGroups = [
-      'byName',
-      'byString',
-      'byRegex'
+        'byName',
+        'byString',
+        'byRegex'
     ]
 
     # Arguments.
