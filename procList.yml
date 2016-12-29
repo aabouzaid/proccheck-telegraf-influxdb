@@ -1,12 +1,12 @@
 # Process name.
 byName:
-  - sshd
-  - vnc
+    - sshd
+    - vnc
 
 # Fixed string.
 byString:
-  zookeeper: "org.apache.zookeeper.server.quorum.QuorumPeerMain"
+    zookeeper: "org.apache.zookeeper.server.quorum.QuorumPeerMain"
 
 # Regular expression.
 byRegex:
-  nginx_master: "nginx: master process .+nginx.+"
+    nginx_master: "nginx: master process .+nginx.+"
