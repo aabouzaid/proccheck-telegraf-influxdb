@@ -26,24 +26,24 @@ In "procList.yml" you will find 3 sections. First one is "byName" for procs name
 ```
 # Process name.
 byName:
-  - sshd
-  - vnc
+    - sshd
+    - vnc
 
 # Fixed string.
 byString:
-  zookeeper: "org.apache.zookeeper.server.quorum.QuorumPeerMain"
+    zookeeper: "org.apache.zookeeper.server.quorum.QuorumPeerMain"
 
 # Regular expression.
 byRegex:
-  nginx_master: "nginx: master process .+nginx.+"
+    nginx_master: "nginx: master process .+nginx.+"
 ```
 
 Output example:
 
 ```
-procCheck,host=LinuxRocks,process_name=sshd,exe=sshd,pid=2814 host=LinuxRocks,process_name="sshd",exe="sshd",pid=2814,pattern="",matched_regex""
-procCheck,host=LinuxRocks,process_name=zookeeper,exe=java,pid=3546 host=LinuxRocks,process_name="zookeeper",exe="java",pid=3546,pattern="org.apache.zookeeper.server.quorum.QuorumPeerMain",matched_regex""
-procCheck,host=LinuxRocks,process_name=nginx_master,exe=nginx,pid=5798 host=LinuxRocks,process_name="nginx_master",exe="nginx",pid=5798,pattern="nginx: master process .+nginx.+",matched_regex"nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx.conf"
+procCheck,host=LinuxRocks,process_name=sshd,exe=sshd,pid=2814 host=LinuxRocks,process_name="sshd",exe="sshd",pid=2814,pattern="",matched_regex=""
+procCheck,host=LinuxRocks,process_name=zookeeper,exe=java,pid=3546 host=LinuxRocks,process_name="zookeeper",exe="java",pid=3546,pattern="org.apache.zookeeper.server.quorum.QuorumPeerMain",matched_regex=""
+procCheck,host=LinuxRocks,process_name=nginx_master,exe=nginx,pid=5798 host=LinuxRocks,process_name="nginx_master",exe="nginx",pid=5798,pattern="nginx: master process .+nginx.+",matched_regex="nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx.conf"
 ```
 
 
@@ -52,11 +52,11 @@ Options
 You can set path of Yaml file that has processes list. Or set measurement name which will be used in Telegraf.
 
 ```
-usage: procCheck.py [-h] [-f YML_FILE] [-n MEASUREMENT_NAME]
+usage: procCheck.py [-h] [-f PROCS_LIST_FILE] [-n MEASUREMENT_NAME]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -f YML_FILE, --yml-file YML_FILE
+  -f PROCS_LIST_FILE, --procs-list-file PROCS_LIST_FILE
                         Path for processes list in YAML file.
                         (default: procList.yml)
   -n MEASUREMENT_NAME, --measurement-name MEASUREMENT_NAME
@@ -81,5 +81,5 @@ Of course you can uses whatever you use for altering, just check supported servi
 About.
 ------
 * **By:** Ahmed M. AbouZaid ([tech.aabouzaid.com](http://tech.aabouzaid.com/)).
-* **Version:** v0.1 - August 2016.
-* **License:**  GPL v2.0 or later.
+* **Version:** v0.2 - December 2016.
+* **License:** GPL v2.0 or later.
