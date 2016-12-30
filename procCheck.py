@@ -79,27 +79,29 @@ class procCheck(object):
         return formatedProcList
 
     #
+    # Get info from any file inside "/proc/PID" path.
+    def getProcInfo(self, pid, pathName):
+        try:
+            procInfo = open(os.path.join('/proc', pid, pathName), 'rb').read().rstrip('\n').replace('\x00',' ')
+        # Handle the error in case any proc did exit while script is still working.
+        except IOError:
+            pass
+        #
+        return procInfo
+
+    #
     # Get list of all procs are running in the system.
     def getSystemProcs(self):
         # Empty dict to put all procs in the system in it.
         systemProcs = dict()
 
         # Loop over pids in /proc.
-        pidsList = [pid for pid in os.listdir('/proc') if pid.isdigit()]
-
-        # Function to get info from any file inside "/proc/PID" path.
-        def getProcInfo(pid, pathName):
-            try:
-                procInfo = open(os.path.join('/proc', pid, pathName), 'rb').read().rstrip('\n').replace('\x00',' ')
-            # Handle the error in case any proc did exit while script is still working.
-            except IOError:
-                pass
-            return procInfo
+        pidsList = filter(lambda pid: pid.isdigit(), os.listdir('/proc'))
 
         # Add proc PID, command arguments, and bin/exe name.
         for pid in pidsList:
-            procArgs = getProcInfo(pid, 'cmdline')
-            procBin = getProcInfo(pid, 'comm')
+            procArgs = self.getProcInfo(pid, 'cmdline')
+            procBin = self.getProcInfo(pid, 'comm')
             if procArgs:
                 systemProcs.update({pid: {"name": procBin, "args": procArgs}})
         #
