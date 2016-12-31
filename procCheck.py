@@ -18,9 +18,9 @@ class script(object):
         parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
         parser.add_argument("-f","--procs-list-file", default="procList.yml", help="Path for processes list in YAML file.")
         parser.add_argument("-n","--measurement-name", default="procCheck", help="It will be used as measurement name in Telegraf.")
-        args = parser.parse_args()
+        arguments = parser.parse_args()
         #
-        return args
+        return arguments
 
     #
     # Open Yaml file.
@@ -50,7 +50,6 @@ class procCheck(object):
     #
     # Merge all groups in one list.
     def initProcsList(self, yamlMonitoredProcs, monitoredProcsFile):
-
         # Validate names of main groups in procs list file.
         if set(yamlMonitoredProcs.keys()) - set(self.monitoredProcsGroups):
             groupsListFormated = '", "'.join(self.monitoredProcsGroups)
@@ -149,7 +148,7 @@ class procCheck(object):
 
     #
     # Find procs in system procs, and print them.
-    def printProcsInSystem(self, foundProcs, measurementName):
+    def printFoundProcsInSystem(self, foundProcs, measurementName):
         hostname = socket.gethostname()
         # Loop over procs that are found, and print them in InfluxDB format.
         for pid, procInfo in foundProcs.iteritems():
@@ -181,15 +180,18 @@ if __name__ == "__main__":
         'byRegex'
     ]
 
+    # Init script class.
+    script = script()
+
     # Arguments.
-    args = script().arguments()
+    args = script.arguments()
     monitoredProcsFile = args.procs_list_file
     measurementName = args.measurement_name
 
     # Get content of Yaml file.
-    yamlMonitoredProcs = script().openYamlFile(monitoredProcsFile)
+    yamlMonitoredProcs = script.openYamlFile(monitoredProcsFile)
 
-    # Init class.
+    # Init procCheck class.
     pc = procCheck(monitoredProcsGroups)
 
     # Get list of monitored processes and processes are running now.
@@ -200,4 +202,4 @@ if __name__ == "__main__":
     foundProcs = pc.findProcsInSystem(monitoredProcs, systemProcs)
 
     # Print processes that founded.
-    pc.printProcsInSystem(foundProcs, measurementName)
+    pc.printFoundProcsInSystem(foundProcs, measurementName)
