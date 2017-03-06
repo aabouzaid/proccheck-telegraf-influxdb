@@ -16,8 +16,10 @@ class script(object):
     # Script options.
     def arguments(self):
         parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-        parser.add_argument("-f","--procs-list-file", default="procList.yml", help="Path for processes list in YAML file.")
-        parser.add_argument("-n","--measurement-name", default="procCheck", help="It will be used as measurement name in Telegraf.")
+        parser.add_argument("-f", "--procs-list-file", default="procList.yml",
+                            help="Path for processes list in YAML file.")
+        parser.add_argument("-n", "--measurement-name", default="procCheck",
+                            help="It will be used as measurement name in Telegraf.")
         arguments = parser.parse_args()
         #
         return arguments
@@ -29,7 +31,7 @@ class script(object):
         try:
             os.path.isfile(yamlFile)
         except TypeError:
-            print "Cannot open YAML file: %s." % (yamlFile)
+            print("Cannot open YAML file: %s." % (yamlFile))
             sys.exit(1)
 
         # Load content of Yaml file.
@@ -53,7 +55,7 @@ class procCheck(object):
         # Validate names of main groups in procs list file.
         if set(yamlMonitoredProcs.keys()) - set(self.monitoredProcsGroups):
             groupsListFormated = '", "'.join(self.monitoredProcsGroups)
-            print 'One of following groups "%s" is not found in %s' % (groupsListFormated, monitoredProcsFile)
+            print('One of following groups "%s" is not found in %s' % (groupsListFormated, monitoredProcsFile))
             sys.exit(1)
 
         # Init a list of dicts, where each dict reprecents a proc.
@@ -72,7 +74,7 @@ class procCheck(object):
             else:
                regex = False
 
-            for proc, pattern in yamlMonitoredProcs[group].iteritems():
+            for proc, pattern in yamlMonitoredProcs[group].items():
                 formatedProcList.append({"name": proc, "pattern": pattern, "regex": regex})
         #
         return formatedProcList
@@ -81,7 +83,7 @@ class procCheck(object):
     # Get info from any file inside "/proc/PID" path.
     def getProcInfo(self, pid, pathName):
         try:
-            procInfo = open(os.path.join('/proc', pid, pathName), 'rb').read().rstrip('\n').replace('\x00',' ')
+            procInfo = open(os.path.join('/proc', pid, pathName), 'r').read().rstrip('\n')
         # Handle the error in case any proc did exit while script is still working.
         except IOError:
             pass
@@ -126,7 +128,7 @@ class procCheck(object):
             procPattern = proc['pattern']
             byRegex = proc['regex']
 
-            for pid, systemProcInfo in systemProcs.iteritems():
+            for pid, systemProcInfo in systemProcs.items():
                 sysProcName = systemProcInfo["name"]
                 sysProcArgs = systemProcInfo["args"]
 
@@ -151,7 +153,7 @@ class procCheck(object):
     def printFoundProcsInSystem(self, foundProcs, measurementName):
         hostname = socket.gethostname()
         # Loop over procs that are found, and print them in InfluxDB format.
-        for pid, procInfo in foundProcs.iteritems():
+        for pid, procInfo in foundProcs.items():
             outputValues = {
                 'pluginName': measurementName,
                 'hostname': hostname,
@@ -166,7 +168,7 @@ class procCheck(object):
             procOutputData = ('host=%(hostname)s,process_name="%(processName)s",exe="%(exe)s",pid=%(pid)s,pattern="%(pattern)s",matched_regex="%(matchedRegex)s"' % outputValues)
 
             # In InfluxDB format, first group is tags names, and second group is values.
-            print procOutputKeys, procOutputData
+            print("%s %s" % (procOutputKeys, procOutputData))
 
 # ------------------------------------------------------------------ #
 # Main.
