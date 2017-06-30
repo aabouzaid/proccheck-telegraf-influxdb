@@ -12,7 +12,6 @@ import argparse
 # Classes/Functions.
 # ------------------------------------------------------------------ #
 
-#
 # Script options.
 def cli_arguments():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -24,7 +23,7 @@ def cli_arguments():
     #
     return arguments
 
-#
+
 # Open Yaml file.
 def openYamlFile(yamlFile):
     # Check if procs list file exists.
@@ -171,11 +170,12 @@ class procCheck(object):
             # In InfluxDB format, first group is tags names, and second group is values.
             print("%s %s" % (procOutputKeys, procOutputData))
 
+
 # ------------------------------------------------------------------ #
 # Main.
 # ------------------------------------------------------------------ #
 
-if __name__ == "__main__":
+def main():
     # Check if any group is missing.
     monitoredProcsGroups = [
         'byName',
@@ -203,3 +203,6 @@ if __name__ == "__main__":
 
     # Print processes that founded.
     pc.printFoundProcsInSystem(foundProcs, measurementName)
+
+if __name__ == "__main__":
+    main()
