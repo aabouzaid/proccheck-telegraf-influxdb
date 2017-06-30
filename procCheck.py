@@ -12,37 +12,36 @@ import argparse
 # Classes/Functions.
 # ------------------------------------------------------------------ #
 
-class script(object):
+#
+# Script options.
+def cli_arguments():
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-f", "--procs-list-file", default="procList.yml",
+                        help="Path for processes list in YAML file.")
+    parser.add_argument("-n", "--measurement-name", default="procCheck",
+                        help="It will be used as measurement name in Telegraf.")
+    arguments = parser.parse_args()
     #
-    # Script options.
-    def arguments(self):
-        parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-        parser.add_argument("-f", "--procs-list-file", default="procList.yml",
-                            help="Path for processes list in YAML file.")
-        parser.add_argument("-n", "--measurement-name", default="procCheck",
-                            help="It will be used as measurement name in Telegraf.")
-        arguments = parser.parse_args()
-        #
-        return arguments
+    return arguments
 
-    #
-    # Open Yaml file.
-    def openYamlFile(self, yamlFile):
-        # Check if procs list file exists.
+#
+# Open Yaml file.
+def openYamlFile(yamlFile):
+    # Check if procs list file exists.
+    try:
+        os.path.isfile(yamlFile)
+    except TypeError:
+        print("Cannot open YAML file: %s." % (yamlFile))
+        sys.exit(1)
+
+    # Load content of Yaml file.
+    with open(yamlFile, 'r') as procsYamlFile:
         try:
-            os.path.isfile(yamlFile)
-        except TypeError:
-            print("Cannot open YAML file: %s." % (yamlFile))
-            sys.exit(1)
-
-        # Load content of Yaml file.
-        with open(yamlFile, 'r') as procsYamlFile:
-            try:
-                yamlFileContent = yaml.load(procsYamlFile)
-            except yaml.YAMLError as yamlError:
-                print(yamlError)
-        #
-        return yamlFileContent
+            yamlFileContent = yaml.load(procsYamlFile)
+        except yaml.YAMLError as yamlError:
+            print(yamlError)
+    #
+    return yamlFileContent
 
 
 class procCheck(object):
@@ -184,16 +183,13 @@ if __name__ == "__main__":
         'byRegex'
     ]
 
-    # Init script class.
-    script = script()
-
     # Arguments.
-    args = script.arguments()
+    args = cli_arguments()
     monitoredProcsFile = args.procs_list_file
     measurementName = args.measurement_name
 
     # Get content of Yaml file.
-    yamlMonitoredProcs = script.openYamlFile(monitoredProcsFile)
+    yamlMonitoredProcs = openYamlFile(monitoredProcsFile)
 
     # Init procCheck class.
     pc = procCheck(monitoredProcsGroups)
