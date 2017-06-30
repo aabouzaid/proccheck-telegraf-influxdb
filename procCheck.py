@@ -7,6 +7,7 @@ import yaml
 import socket
 import argparse
 
+
 # ------------------------------------------------------------------ #
 # Classes/Functions.
 # ------------------------------------------------------------------ #
@@ -43,6 +44,7 @@ class script(object):
         #
         return yamlFileContent
 
+
 class procCheck(object):
     #
     # Init.
@@ -63,16 +65,16 @@ class procCheck(object):
 
         # Convert procs list to dict (key is proc, and value is pattern).
         byProcName = 'byName'
-        byNameDict = dict((key,"") for key in yamlMonitoredProcs[byProcName])
+        byNameDict = dict((key, "") for key in yamlMonitoredProcs[byProcName])
         del yamlMonitoredProcs[byProcName]
         yamlMonitoredProcs[byProcName] = byNameDict
 
         # Append content of groups to the list.
         for group in yamlMonitoredProcs:
             if group == 'byRegex':
-               regex = True
+                regex = True
             else:
-               regex = False
+                regex = False
 
             for proc, pattern in yamlMonitoredProcs[group].items():
                 formatedProcList.append({"name": proc, "pattern": pattern, "regex": regex})
@@ -138,13 +140,13 @@ class procCheck(object):
 
                 # Find procs by Regex
                 if byRegex and regexPattern.search(sysProcArgs):
-                   self.updateProcsDict(foundProcs, pid, procName, sysProcName, procPattern, matchedRegex[0])
+                    self.updateProcsDict(foundProcs, pid, procName, sysProcName, procPattern, matchedRegex[0])
                 # Find procs by pattern (fixed string).
                 elif procPattern and procPattern in sysProcArgs:
-                   self.updateProcsDict(foundProcs, pid, procName, sysProcName, procPattern)
+                    self.updateProcsDict(foundProcs, pid, procName, sysProcName, procPattern)
                 # Find procs by name.
                 elif procName == sysProcName:
-                   self.updateProcsDict(foundProcs, pid, procName, sysProcName)
+                    self.updateProcsDict(foundProcs, pid, procName, sysProcName)
         #
         return foundProcs
 
