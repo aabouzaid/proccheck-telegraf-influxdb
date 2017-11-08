@@ -4,7 +4,6 @@ import os
 import re
 import sys
 import yaml
-import socket
 import argparse
 
 
@@ -151,12 +150,10 @@ class procCheck(object):
     #
     # Find procs in system procs, and print them.
     def printFoundProcsInSystem(self, foundProcs, measurementName):
-        hostname = socket.gethostname()
         # Loop over procs that are found, and print them in InfluxDB format.
         for pid, procInfo in foundProcs.items():
             outputValues = {
                 'pluginName': measurementName,
-                'hostname': hostname,
                 'pid': pid,
                 'exe': procInfo["exe"],
                 'pattern': procInfo["pattern"],
@@ -164,8 +161,8 @@ class procCheck(object):
                 'matchedRegex': procInfo['matched_regex']
             }
 
-            procOutputKeys = ('%(pluginName)s,host=%(hostname)s,process_name=%(processName)s,exe=%(exe)s,pid=%(pid)s' % outputValues)
-            procOutputData = ('host=%(hostname)s,process_name="%(processName)s",exe="%(exe)s",pid=%(pid)s,pattern="%(pattern)s",matched_regex="%(matchedRegex)s"' % outputValues)
+            procOutputKeys = ('%(pluginName)s,process_name=%(processName)s,exe=%(exe)s,pid=%(pid)s' % outputValues)
+            procOutputData = ('process_name="%(processName)s",exe="%(exe)s",pid=%(pid)s,pattern="%(pattern)s",matched_regex="%(matchedRegex)s"' % outputValues)
 
             # In InfluxDB format, first group is tags names, and second group is values.
             print("%s %s" % (procOutputKeys, procOutputData))
