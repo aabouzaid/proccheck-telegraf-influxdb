@@ -5,6 +5,7 @@ import re
 import sys
 import yaml
 import argparse
+import psutil
 
 
 # ------------------------------------------------------------------ #
@@ -65,9 +66,9 @@ class procCheck(object):
         byNameDict = dict((key, "") for key in yamlMonitoredProcs[byProcName])
         del yamlMonitoredProcs[byProcName]
         yamlMonitoredProcs[byProcName] = byNameDict
-
         # Append content of groups to the list.
         for group in yamlMonitoredProcs:
+
             if group == 'byRegex':
                 regex = True
             else:
@@ -75,6 +76,7 @@ class procCheck(object):
 
             for proc, pattern in yamlMonitoredProcs[group].items():
                 formatedProcList.append({"name": proc, "pattern": pattern, "regex": regex})
+
         #
         return formatedProcList
 
@@ -109,8 +111,8 @@ class procCheck(object):
 
     #
     # Update dict with proc info.
-    def updateProcsDict(self, procsDict, pid, name, exe, pattern="", matchedRegex=""):
-        procData = {pid: {"name": name, "exe": exe, "pattern": pattern, "matched_regex": matchedRegex}}
+    def updateProcsDict(self, procsDict, pid, name, exe, process_status, pattern="", matchedRegex=""):
+        procData = {pid: {"name": name, "exe": exe, "process_status": procStatus, "pattern": pattern, "matched_regex": matchedRegex}}
         procsDict.update(procData)
         #
         return procsDict
@@ -130,6 +132,8 @@ class procCheck(object):
             for pid, systemProcInfo in systemProcs.items():
                 sysProcName = systemProcInfo["name"]
                 sysProcArgs = systemProcInfo["args"]
+                p = psutil.Process(int(pid))
+                process_status = p.status()
 
                 if byRegex:
                     regexPattern = re.compile(procPattern)
@@ -137,13 +141,13 @@ class procCheck(object):
 
                 # Find procs by Regex
                 if byRegex and regexPattern.search(sysProcArgs):
-                    self.updateProcsDict(foundProcs, pid, procName, sysProcName, procPattern, matchedRegex[0])
+                    self.updateProcsDict(foundProcs, pid, procName, sysProcName, process_status, procPattern, matchedRegex[0])
                 # Find procs by pattern (fixed string).
                 elif procPattern and procPattern in sysProcArgs:
-                    self.updateProcsDict(foundProcs, pid, procName, sysProcName, procPattern)
+                    self.updateProcsDict(foundProcs, pid, procName, sysProcName, process_status, procPattern)
                 # Find procs by name.
                 elif procName == sysProcName:
-                    self.updateProcsDict(foundProcs, pid, procName, sysProcName)
+                    self.updateProcsDict(foundProcs, pid, procName, sysProcName, process_status)
         #
         return foundProcs
 
@@ -158,11 +162,12 @@ class procCheck(object):
                 'exe': procInfo["exe"],
                 'pattern': procInfo["pattern"],
                 'processName': procInfo["name"],
+                'processStatus': procInfo["processStatus"],
                 'matchedRegex': procInfo['matched_regex']
             }
 
-            procOutputKeys = ('%(pluginName)s,process_name=%(processName)s,exe=%(exe)s,pid=%(pid)s' % outputValues)
-            procOutputData = ('process_name="%(processName)s",exe="%(exe)s",pid=%(pid)s,pattern="%(pattern)s",matched_regex="%(matchedRegex)s"' % outputValues)
+            procOutputKeys = ('%(pluginName)s,process_name=%(processName)s,exe=%(exe)s,pid=%(pid)s,process_status=%(processStatus)s' % outputValues)
+            procOutputData = ('process_name="%(processName)s",exe="%(exe)s",pid=%(pid)s,process_status=%(processStatus)s,pattern="%(pattern)s",matched_regex="%(matchedRegex)s"' % outputValues)
 
             # In InfluxDB format, first group is tags names, and second group is values.
             print("%s %s" % (procOutputKeys, procOutputData))
